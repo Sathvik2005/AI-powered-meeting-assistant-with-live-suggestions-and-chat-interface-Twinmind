@@ -9,6 +9,18 @@ import { ExportPanel } from './components/ExportPanel';
 import { useAudioRecorder, useTranscription, useSuggestions, useChat } from './hooks/useAudio';
 import { Mic, MicOff, Settings, Zap, RotateCw, AlertCircle, CheckCircle, Wifi, WifiOff, Trash2 } from 'lucide-react';
 
+// API Base URL - works in both dev and production
+const getApiBaseUrl = () => {
+  // In development: use localhost:3001
+  // In production (Vercel): use relative path to multi-service backend
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:3001';
+  }
+  return '/_/backend';
+};
+
+const API_BASE = getApiBaseUrl();
+
 export default function App() {
   const isRecording = useStore((state) => state.isRecording);
   const setIsRecording = useStore((state) => state.setIsRecording);
@@ -82,7 +94,7 @@ export default function App() {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/health');
+        const response = await fetch(`${API_BASE}/api/health`);
         if (response.ok) {
           setBackendConnected(true);
           setRetryCount(0);
