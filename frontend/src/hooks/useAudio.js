@@ -1,5 +1,17 @@
 import { useCallback, useRef, useEffect, useState } from 'react';
 
+// API Base URL - works in both dev and production
+const getApiBaseUrl = () => {
+  // In development: use localhost:3001
+  // In production (Vercel): use relative path to multi-service backend
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:3001';
+  }
+  return '/_/backend';
+};
+
+const API_BASE = getApiBaseUrl();
+
 // Helper for timeout on fetch requests
 const fetchWithTimeout = (url, options = {}, timeoutMs = 10000) => {
   return Promise.race([
@@ -86,7 +98,7 @@ export const useTranscription = () => {
     formData.append('audio', audioBlob, 'audio.webm');
     formData.append('duration', 30);
 
-    const response = await fetchWithTimeout('http://localhost:3001/api/transcription/transcribe', {
+    const response = await fetchWithTimeout(`${API_BASE}/api/transcription/transcribe`, {
       method: 'POST',
       headers: {
         'X-Groq-API-Key': apiKey
@@ -120,7 +132,7 @@ export const useSuggestions = () => {
     console.log('  Transcript:', payload.transcript.slice(0, 50) + '...');
     console.log('  Length:', payload.transcript.length, 'chars');
 
-    const response = await fetchWithTimeout('http://localhost:3001/api/suggestions/generate', {
+    const response = await fetchWithTimeout(`${API_BASE}/api/suggestions/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +164,7 @@ export const useChat = () => {
     console.log('📤 [Chat Expand] Sending to API...');
     console.log('  Suggestion:', suggestion.text || suggestion);
 
-    const response = await fetchWithTimeout('http://localhost:3001/api/chat/expand', {
+    const response = await fetchWithTimeout(`${API_BASE}/api/chat/expand`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -184,7 +196,7 @@ export const useChat = () => {
     console.log('📤 [Chat Message] Sending to API...');
     console.log('  Message:', message);
 
-    const response = await fetchWithTimeout('http://localhost:3001/api/chat/message', {
+    const response = await fetchWithTimeout(`${API_BASE}/api/chat/message`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
