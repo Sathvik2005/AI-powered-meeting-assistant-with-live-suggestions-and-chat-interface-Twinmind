@@ -52,7 +52,6 @@ export default function App() {
   // Helper function to generate suggestions after new transcript
   const generateSuggestionsAfterTranscript = useCallback(async (newTranscript) => {
     if (!apiKey) {
-      console.warn('⚠️ API key not configured');
       return;
     }
 
@@ -66,24 +65,17 @@ export default function App() {
       .trim()
       .slice(-contextWindow);
 
-    console.log('📝 Generating suggestions for transcript of length:', allTranscriptText.length);
-
     try {
       setIsProcessing(true);
       const suggestions = await generateSuggestions(allTranscriptText, suggestionPrompt, apiKey);
-      
-      console.log('✅ Suggestions generated:', suggestions?.length || 0);
       
       if (suggestions && suggestions.length > 0) {
         addSuggestionBatch(suggestions);
         setLastRefreshTime(new Date().toISOString());
         setSuccessMessage('💡 New suggestions generated');
         setTimeout(() => setSuccessMessage(''), 2000);
-      } else {
-        console.warn('⚠️ No suggestions returned');
       }
     } catch (err) {
-      console.error('❌ Suggestions error:', err.message);
       setError(`❌ Failed to generate suggestions: ${err.message}`);
     } finally {
       setIsProcessing(false);
@@ -146,21 +138,17 @@ export default function App() {
         const transcript = await transcribe(audioBlob, apiKey);
         if (transcript && transcript.trim()) {
           addTranscriptChunk(transcript);
-          console.log('✅ Transcript added:', transcript.slice(0, 50) + '...');
           setSuccessMessage('✅ Transcription successful');
           setTimeout(() => setSuccessMessage(''), 2000);
           setRetryCount(0);
           
           // IMMEDIATELY trigger suggestions after transcription with the new transcript
           setTimeout(() => {
-            console.log('🚀 Triggering suggestions immediately after transcription');
-            // Generate suggestions based on latest transcript chunks
             generateSuggestionsAfterTranscript(transcript);
           }, 100); // Small delay to let state update
         }
       } catch (err) {
         attempts++;
-        console.error('❌ Transcription error:', err);
         if (attempts < maxAttempts) {
           setError(`⏳ Retrying transcription (${attempts}/${maxAttempts})...`);
           setTimeout(attemptTranscribe, 1000);
@@ -218,25 +206,17 @@ export default function App() {
 
   // Generate suggestions with retry
   const handleRefreshSuggestions = useCallback(async () => {
-    console.log('🔄 handleRefreshSuggestions called');
-    console.log('  API Key configured:', !!apiKey);
-    console.log('  Transcript chunks:', transcriptChunks.length);
-    console.log('  Backend connected:', backendConnected);
-
     if (!apiKey) {
-      console.warn('⚠️ API key not configured');
       setError('🔑 API key not configured');
       return;
     }
 
     if (transcriptChunks.length === 0) {
-      console.warn('⚠️ No transcript chunks');
       setError('📝 No transcript to generate suggestions from');
       return;
     }
 
     if (!backendConnected) {
-      console.warn('⚠️ Backend not connected');
       setError('📡 Backend server is not responding');
       return;
     }
@@ -248,28 +228,17 @@ export default function App() {
         .join(' ')
         .slice(-contextWindow);
 
-      console.log('📤 Sending to suggestions API:');
-      console.log('  Context length:', fullTranscript.length, 'chars');
-      console.log('  Context window:', contextWindow);
-
       const suggestions = await generateSuggestions(fullTranscript, suggestionPrompt, apiKey);
       
-      console.log('✅ Suggestions received:', suggestions?.length || 0);
-      
       if (suggestions && suggestions.length > 0) {
-        console.log('💾 Adding suggestion batch');
         addSuggestionBatch(suggestions);
         setLastRefreshTime(new Date().toISOString());
         setSuccessMessage('💡 New suggestions generated');
         setTimeout(() => setSuccessMessage(''), 2000);
       } else {
-        console.warn('⚠️ No suggestions returned');
         setError('❌ No suggestions generated');
       }
     } catch (err) {
-      console.error('❌ Suggestions error:', err);
-      console.error('Error message:', err.message);
-      console.error('Error stack:', err.stack);
       setError(`❌ Suggestions failed: ${err.message}`);
     } finally {
       setIsProcessing(false);
@@ -290,8 +259,6 @@ export default function App() {
 
   // Handle suggestion selection - expand to detailed answer
   const handleSuggestionSelect = useCallback(async (suggestion) => {
-    console.log('🎯 Suggestion selected:', suggestion.text);
-    
     if (!apiKey) {
       setError('🔑 API key not configured');
       return;

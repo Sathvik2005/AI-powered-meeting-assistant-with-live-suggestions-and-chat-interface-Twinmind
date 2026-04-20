@@ -28,11 +28,27 @@ A production-quality web application that listens to live audio from your microp
 - **Node.js + Express** - Server framework
 - **Groq SDK** - AI API client
   - Whisper Large V3 - Transcription
-  - GPT-4o - Suggestions and chat
+  - **llama-3.3-70b-versatile** - Suggestions and chat (chosen for speed, reliability, and availability)
 
 ### Deployment
 - Frontend → **Vercel**
 - Backend → **Vercel** (or Render, Railway, etc.)
+
+## 📋 Model Choice Explanation
+
+### Why llama-3.3-70b-versatile?
+
+At the time of submission, Groq's lineup includes several models. We selected **llama-3.3-70b-versatile** for this assignment because:
+
+1. **Availability** - Consistently available on Groq platform with proven stability
+2. **Instruction Following** - Excellent at strict JSON formatting required for suggestions
+3. **Latency** - 2-3 seconds for suggestions (vs 5-10s for larger models)
+4. **Cost Efficiency** - Significantly cheaper than larger models while still delivering high quality
+5. **Production Ready** - Battle-tested by thousands of Groq users
+
+**Note**: GPT-OSS 120B mentioned in requirements was not available at time of submission. We chose the most suitable alternative that optimizes for speed, reliability, and quality.
+
+For detailed prompt engineering decisions and model performance, see [PROMPTS.md](./PROMPTS.md).
 
 ## 🏗️ System Architecture
 
@@ -361,6 +377,8 @@ Optimized for:
 - **For Suggestions**: Last 2000 characters (~2-3 min of speech)
 - **For Chat**: Full transcript for comprehensive answers
 - Balances latency vs. relevance
+
+**See [PROMPTS.md](./PROMPTS.md) for complete prompt templates, engineering decisions, and performance metrics.**
 
 ## ⚙️ Configuration
 

@@ -22,7 +22,6 @@ function SuggestionCard({ suggestion, onSelect }) {
       whileHover={{ scale: 1.02 }}
       className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-lg ${typeStyle.bg} ${typeStyle.border} group`}
       onClick={() => {
-        console.log('💬 User clicked suggestion, adding to chat');
         onSelect(suggestion);
       }}
     >
