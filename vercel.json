@@ -9,8 +9,5 @@
       "entrypoint": "backend",
       "routePrefix": "/_/backend"
     }
-  },
-  "env": {
-    "GROQ_API_KEY": "@groq_api_key"
   }
 }
